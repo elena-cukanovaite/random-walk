@@ -7,7 +7,7 @@ let positionY=0;
 let positionZ=0;
 
 const ThreeDPlot = (props) => {
-  console.log(props.value[0]);
+  //console.log(props.value[0]);
   const [settings, updateSettings] = useState({
       data: [
               {
@@ -34,20 +34,45 @@ const ThreeDPlot = (props) => {
   );
 };
 
+
+
 const App = () => {
-  const [count, setCount] = useState([[0],[0],[0]]);
+
+  const [count, setCount] = useState([[positionX],[positionY],[positionZ]]);
+
+  const randomStep = (array) => {
+    return [...array, array.at(array.length - 1) + Math.random()*2-1]
+  }
+
+  const manyRandomSteps = (e) => {
+    let countMany = [[positionX],[positionY],[positionZ]]
+
+    let numberOfSteps = e.target.value;
+    for (let i=0; i < numberOfSteps; i++){
+        countMany[0].push(countMany[0].at(countMany[0].length - 1) + Math.random()*2-1);
+        countMany[1].push(countMany[1].at(countMany[1].length - 1) + Math.random()*2-1);
+        countMany[2].push(countMany[2].at(countMany[2].length - 1) + Math.random()*2-1);
+    };
+    setCount(countMany)
+  }
+  
+  //const [sliderValue, setSliderValue] = useState("50");
   return (
       <>
           <ThreeDPlot value={count} />
           <button
               onClick={() =>
-                  setCount([[...count[0], count[0].at(count[0].length - 1) + Math.random()*2-1],
-                  [...count[1], count[1].at(count[1].length - 1) + Math.random()*2-1],
-                  [...count[2], count[2].at(count[2].length - 1) + Math.random()*2-1,]])//count.at(count.length - 1) + 1]) //spread operator
+                  setCount([randomStep(count[0]),
+                  randomStep(count[1]),
+                  randomStep(count[2])])
               }
           >
-              Generate new position
+              Generate one new position
           </button>
+          <p>Generate many positions at once</p>
+          <b>Number of steps: </b>
+          <input type="range" class="slider" min="0" max="1000" id='slider' onChange={manyRandomSteps}></input>
+          {/* <button onClick={manyRandomSteps(count)}>Generate many steps at once</button> */}
       </>
   );
 };
