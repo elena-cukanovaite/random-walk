@@ -39,6 +39,7 @@ const ThreeDPlot = (props) => {
 const App = () => {
 
   const [count, setCount] = useState([[positionX],[positionY],[positionZ]]);
+  const [valueOfSlider, setValueOfSlider] = useState("1");
 
   const randomStep = (array) => {
     return [...array, array.at(array.length - 1) + Math.random()*2-1]
@@ -53,7 +54,8 @@ const App = () => {
         countMany[1].push(countMany[1].at(countMany[1].length - 1) + Math.random()*2-1);
         countMany[2].push(countMany[2].at(countMany[2].length - 1) + Math.random()*2-1);
     };
-    setCount(countMany)
+    setCount(countMany);
+    setValueOfSlider(numberOfSteps);
   }
   
   //const [sliderValue, setSliderValue] = useState("50");
@@ -71,7 +73,8 @@ const App = () => {
           </button>
           <p>Generate many positions at once</p>
           <b>Number of steps: </b>
-          <input type="range" class="slider" min="0" max="1000" id='slider' onChange={manyRandomSteps}></input>
+          <input type="range" class="slider" min="1" max="1000" value={valueOfSlider} id='slider' onChange={manyRandomSteps}></input>
+          {valueOfSlider}
           {/* <button onClick={manyRandomSteps(count)}>Generate many steps at once</button> */}
       </>
   );
