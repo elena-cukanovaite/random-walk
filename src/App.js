@@ -7,7 +7,6 @@ let positionY=0;
 let positionZ=0;
 
 const ThreeDPlot = (props) => {
-  //console.log(props.value[0]);
   const [settings, updateSettings] = useState({
       data: [
               {
@@ -41,8 +40,12 @@ const App = () => {
   const [count, setCount] = useState([[positionX],[positionY],[positionZ]]);
   const [valueOfSlider, setValueOfSlider] = useState("1");
 
-  const randomStep = (array) => {
-    return [...array, array.at(array.length - 1) + Math.random()*2-1]
+  const randomStepCalculation = (array) => {
+    return array.at(array.length - 1) + Math.random()*2-1
+  }
+
+  const oneRandomStep = (array) => {
+    return [...array, randomStepCalculation(array)]
   }
 
   const manyRandomSteps = (e) => {
@@ -50,31 +53,37 @@ const App = () => {
 
     let numberOfSteps = e.target.value;
     for (let i=0; i < numberOfSteps; i++){
-        countMany[0].push(countMany[0].at(countMany[0].length - 1) + Math.random()*2-1);
-        countMany[1].push(countMany[1].at(countMany[1].length - 1) + Math.random()*2-1);
-        countMany[2].push(countMany[2].at(countMany[2].length - 1) + Math.random()*2-1);
+        countMany[0].push(randomStepCalculation(countMany[0]));
+        countMany[1].push(randomStepCalculation(countMany[1]));
+        countMany[2].push(randomStepCalculation(countMany[2]));
     };
     setCount(countMany);
     setValueOfSlider(numberOfSteps);
   }
   
-  //const [sliderValue, setSliderValue] = useState("50");
   return (
       <>
           <ThreeDPlot value={count} />
           <button
               onClick={() =>
-                  setCount([randomStep(count[0]),
-                  randomStep(count[1]),
-                  randomStep(count[2])])
+                  setCount([oneRandomStep(count[0]),
+                  oneRandomStep(count[1]),
+                  oneRandomStep(count[2])])
               }
           >
               Generate one new position
           </button>
+          <button onClick={() =>
+                  setCount([oneRandomStep(count[0]),
+                  oneRandomStep(count[1]),
+                  oneRandomStep(count[2])])
+              }>
+            Add one new particle</button>
           <p>Generate many positions at once</p>
           <b>Number of steps: </b>
           <input type="range" class="slider" min="1" max="1000" value={valueOfSlider} id='slider' onChange={manyRandomSteps}></input>
           {valueOfSlider}
+
           {/* <button onClick={manyRandomSteps(count)}>Generate many steps at once</button> */}
       </>
   );
