@@ -6,37 +6,12 @@ let positionX=0;
 let positionY=0;
 let positionZ=0;
 
-const ThreeDPlot = (props) => {
-  const [settings, updateSettings] = useState({
-      data: [
-              {
-                  type: 'scatter3d', 
-                  x: props.value[0], 
-                  y: props.value[1], 
-                  z: props.value[2]
-              },
-          ],
-      layout: { width: '100%', height: 600, title: 'Random walk' },
-      frames: {},
-      config: {},
-  });
-  useEffect(() => {
-      updateSettings((settings) => ({
-          ...settings,
-          data: [{ ...settings.data[0], x: props.value[0], y: props.value[1], z: props.value[2]}],
-      }));
-  }, [props.value]);
-  return (
-      <div>
-          <Plot data={settings.data} layout={settings.layout} />
-      </div>
-  );
-};
 
 const ThreeDPlotManyParticles = (props) => {
+    console.log('ahhd', props.value[0].x);
     const [settings, updateSettings] = useState({
         data: props.value,
-        layout: { width: '100%', height: 300, title: 'Random walk'},
+        layout: { width: '100%', height: 300, title: 'Random walk', showlegend: false},
         frames: {},
         config: {},
     });
@@ -57,16 +32,11 @@ const randomStepCalculation = (array) => {
     return array.at(array.length - 1) + Math.random()*2-1
   }
 
-const oneRandomStep = (array) => {
-    return [...array, randomStepCalculation(array)]
-  }
-
 const initiatedPosition = {x: [positionX], y: [positionY], z: [positionZ], 
     type: 'scatter3d', 
     marker: {color:'rgb(127, 127, 127)'}};
 
 const App = () => {
-  const [data, setData] = useState([[positionX],[positionY],[positionZ]]);
   const [valueOfSlider, setValueOfSlider] = useState("1");
   const [particles, setParticles] = useState([initiatedPosition]); 
 
@@ -77,44 +47,48 @@ const App = () => {
     setParticles([...particles,NewParticle]);
   };
   
-  const manyRandomSteps = (e) => {
-    let newData = particles;
-    let numberOfSteps = e.target.value;
-    
-    // for (let j=0; j < newData.length; j++){
-    //     newData[j].x = [particles[j].x[0]];
-    //     newData[j].y = [particles[j].y[0]];
-    //     newData[j].z = [particles[j].z[0]];
-    //     for (let i=0; i < numberOfSteps; i++){
-    //         newData[j].x.push(randomStepCalculation(newData[j].x));
-    //         newData[j].y.push(randomStepCalculation(newData[j].y));
-    //         newData[j].z.push(randomStepCalculation(newData[j].z));
-    //     }
-    // };
-    for (let j=0; j < particles.length; j++){
-        particles[j].x = [particles[j].x[0]];
-        particles[j].y = [particles[j].y[0]];
-        particles[j].z = [particles[j].z[0]];
-        for (let i=0; i < numberOfSteps; i++){
-            particles[j].x.push(randomStepCalculation(particles[j].x));
-            particles[j].y.push(randomStepCalculation(particles[j].y));
-            particles[j].z.push(randomStepCalculation(particles[j].z));
-        }
-    };
+  const addOneNewStep = () => {
+    const newParticles = particles.map((particle) => ({
+        ...particle,
+        x: [...particle.x, randomStepCalculation(particle.x)],
+        y: [...particle.y, randomStepCalculation(particle.y)],
+        z: [...particle.z, randomStepCalculation(particle.z)],
+    }));
 
-    setParticles(particles);
+    setParticles(newParticles);
+};
+
+  const manyRandomSteps = (e) => {
+    const numberOfSteps = e.target.value;
     
+    const newParticles = particles.map((particle) => {
+        let newX = [particle.x[0]];
+        let newY = [particle.y[0]];
+        let newZ = [particle.z[0]];
+
+        for (let i = 0; i < numberOfSteps; i++) {
+            newX.push(randomStepCalculation(newX));
+            newY.push(randomStepCalculation(newY));
+            newZ.push(randomStepCalculation(newZ));
+        }
+
+        return {
+            ...particle,
+            x: newX,
+            y: newY,
+            z: newZ,
+        };
+    });
+
+    setParticles(newParticles);
     setValueOfSlider(numberOfSteps);
-  };
+};
+
 
   return (
       <>
         <button
-              onClick={() =>
-                  setData([oneRandomStep(data[0]),
-                  oneRandomStep(data[1]),
-                  oneRandomStep(data[2])])
-              }
+              onClick={addOneNewStep}
             >
                 Generate one new position
         </button>
@@ -124,9 +98,6 @@ const App = () => {
         <input type="range" class="slider" min="1" max="5" value={valueOfSlider} id='slider' onChange={manyRandomSteps}></input>
         {valueOfSlider}
 
-        {/* <ThreeDPlot 
-            value={data} 
-        /> */}
         <ThreeDPlotManyParticles 
             value={particles} 
         />
