@@ -193,7 +193,9 @@ const App = () => {
 
   return (
       <>
-        AVERAGE: {average3D().x}, {average3D().y}, {average3D().z}
+        <h1>Random Walk</h1>
+        <p>A random walk in 3D is a mathematical model that describes a path consisting of a series of steps in three-dimensional space. In this model, each step is determined by randomly sampling from a uniform distribution, allowing the walker to move in any direction with equal probability. The resulting trajectory can be visualized as a sequence of points in 3D space, showcasing the unpredictable nature of the walk as it explores the surrounding environment. This concept is often used in simulations, statistical mechanics, and various fields of science to model random processes.</p>
+        
         <br></br>
         <button onClick={addNewParticle}>Add one new particle</button>
         <button
@@ -205,6 +207,20 @@ const App = () => {
         <b>Number of steps: </b>
         <input type="range" class="slider" min="1" max="1001" value={valueOfSlider} id='slider' onChange={manyRandomSteps}></input>
         {valueOfSlider}
+        <h2>AVERAGE:</h2> 
+        <table>
+            <tr>
+                <th>X-Axis</th>
+                <th>Y-Axis</th>
+                <th>Z-Axis</th>
+            </tr>
+            <tr>
+                <td>{average3D().x.toFixed(3)}</td>
+                <td>{average3D().y.toFixed(3)}</td>
+                <td>{average3D().z.toFixed(3)}</td>
+            </tr>
+        </table>
+
         <CustomPlot 
             props={particles}
             layoutTitle="3D Random Walk"
