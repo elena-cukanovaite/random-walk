@@ -6,21 +6,27 @@ let positionX=0;
 let positionY=0;
 let positionZ=0;
 
-
-const ThreeDPlotManyParticles = (props) => {
-    console.log('ahhd', props.value[0].x);
+const CustomPlot = ({props,layoutTitle,xAxisTitle,yAxisTitle,zAxisTitle}) => {
+    console.log(props);
     const [settings, updateSettings] = useState({
-        data: props.value,
-        layout: { width: '100%', height: 300, title: 'Random walk', showlegend: false},
+        data: props,
+        layout: { width: '100%', height: '100%', title: layoutTitle, showlegend: false, 
+                scene:{xaxis:{title:xAxisTitle},
+                        yaxis:{title:yAxisTitle}, 
+                        zaxis:{title:zAxisTitle}},
+                xaxis:{title:xAxisTitle},
+                yaxis:{title:yAxisTitle},
+                zaxis:{title:zAxisTitle},
+                },
         frames: {},
         config: {},
     });
     useEffect(() => {
         updateSettings((settings) => ({
             ...settings,
-            data: props.value,
+            data: props,
         }));
-    }, [props.value]);
+    }, [props]);
     return (
         <div>
             <Plot data={settings.data} layout={settings.layout} />
@@ -32,19 +38,48 @@ const randomStepCalculation = (array) => {
     return array.at(array.length - 1) + Math.random()*2-1
   }
 
-const initiatedPosition = {x: [positionX], y: [positionY], z: [positionZ], 
+const initiatedPosition3D = {x: [positionX], y: [positionY], z: [positionZ], 
     type: 'scatter3d', 
     marker: {color:'rgb(127, 127, 127)'}};
 
+const initiatedPositionXY = {x: [positionX], y: [positionY], 
+    type: 'scatter', 
+    marker: {color:'rgb(127, 127, 127)'}};   
+
+const initiatedPositionXZ = {x: [positionX], y: [positionZ], 
+    type: 'scatter', 
+    marker: {color:'rgb(127, 127, 127)'}}; 
+
+const initiatedPositionYZ = {x: [positionY], y: [positionZ], 
+    type: 'scatter', 
+    marker: {color:'rgb(127, 127, 127)'}}; 
+
 const App = () => {
   const [valueOfSlider, setValueOfSlider] = useState("1");
-  const [particles, setParticles] = useState([initiatedPosition]); 
+  const [particles, setParticles] = useState([initiatedPosition3D]);
+  const [particleXY, setParticlesXY] = useState([initiatedPositionXY]); 
+  const [particleXZ, setParticlesXZ] = useState([initiatedPositionXZ]); 
+  const [particleYZ, setParticlesYZ] = useState([initiatedPositionYZ]); 
 
   const addNewParticle = () => {
-    let NewParticle = {x: [Math.random()*2-1], y: [Math.random()*2-1], z: [Math.random()*2-1], 
+    let newParticle3D = {x: [Math.random()*2-1], y: [Math.random()*2-1], z: [Math.random()*2-1], 
         type: 'scatter3d', 
         marker: {color: `rgb(${Math.random()*256}, ${Math.random()*256}, ${Math.random()*256})`}}
-    setParticles([...particles,NewParticle]);
+    setParticles([...particles,newParticle3D]);
+
+    let newParticleXY = {...newParticle3D};
+    newParticleXY.type = 'scatter';
+    setParticlesXY([...particleXY,newParticleXY]);
+
+    let newParticleXZ = {...newParticleXY};
+    newParticleXZ.y = newParticleXY.z;
+    setParticlesXZ([...particleXZ,newParticleXZ]);
+
+    let newParticleYZ = {...newParticleXY};
+    newParticleYZ.x = newParticleXY.y;
+    newParticleYZ.y = newParticleXY.z;
+    setParticlesYZ([...particleYZ,newParticleYZ]);
+
   };
   
   const addOneNewStep = () => {
@@ -55,11 +90,30 @@ const App = () => {
         z: [...particle.z, randomStepCalculation(particle.z)],
     }));
 
+    const newParticlesXY = newParticles.map((particle) => ({
+        ...particle,
+        type: 'scatter'
+    }));
+
+    const newParticlesXZ = newParticlesXY.map((particle) => ({
+        ...particle,
+        y: particle.z
+    }));
+
+    const newParticlesYZ = newParticlesXY.map((particle) => ({
+        ...particle,
+        x: particle.y,
+        y: particle.z
+    }));
+
     setParticles(newParticles);
+    setParticlesXY(newParticlesXY);
+    setParticlesXZ(newParticlesXZ);
+    setParticlesYZ(newParticlesYZ);
 };
 
   const manyRandomSteps = (e) => {
-    const numberOfSteps = e.target.value;
+    const numberOfSteps = e.target.value-1;
     
     const newParticles = particles.map((particle) => {
         let newX = [particle.x[0]];
@@ -80,26 +134,72 @@ const App = () => {
         };
     });
 
+    const newParticlesXY = newParticles.map((particle) => {
+        return {
+            ...particle,
+            type: 'scatter'
+        }
+    });
+
+    const newParticlesXZ = newParticlesXY.map((particle) => {
+        return {
+            ...particle,
+            y: particle.z
+        }
+    });
+
+    const newParticlesYZ = newParticlesXY.map((particle) => {
+        return {
+            ...particle,
+            x: particle.y,
+            y: particle.z
+        }
+    });
+
     setParticles(newParticles);
+    setParticlesXY(newParticlesXY);
+    setParticlesXZ(newParticlesXZ);
+    setParticlesYZ(newParticlesYZ);
     setValueOfSlider(numberOfSteps);
 };
 
 
   return (
       <>
+        <button onClick={addNewParticle}>Add one new particle</button>
         <button
               onClick={addOneNewStep}
             >
                 Generate one new position
         </button>
-        <button onClick={addNewParticle}>Add one new particle</button>
         <p>Generate many positions at once</p>
         <b>Number of steps: </b>
-        <input type="range" class="slider" min="1" max="5" value={valueOfSlider} id='slider' onChange={manyRandomSteps}></input>
+        <input type="range" class="slider" min="1" max="1001" value={valueOfSlider} id='slider' onChange={manyRandomSteps}></input>
         {valueOfSlider}
-
-        <ThreeDPlotManyParticles 
-            value={particles} 
+        <CustomPlot 
+            props={particles}
+            layoutTitle="3D Random Walk"
+            xAxisTitle="X Axis"
+            yAxisTitle="Y Axis"
+            zAxisTitle="Z Axis"
+        />
+        <CustomPlot 
+            props={particleXY} 
+            layoutTitle="X-Y Projection of 3D Random Walk"
+            xAxisTitle="X Axis"
+            yAxisTitle="Y Axis"
+        />
+        <CustomPlot 
+            props={particleXZ} 
+            layoutTitle="X-Z Projection of 3D Random Walk"
+            xAxisTitle="X Axis"
+            yAxisTitle="Z Axis"
+        />
+        <CustomPlot 
+            props={particleYZ} 
+            layoutTitle="Y-Z Projection of 3D Random Walk"
+            xAxisTitle="Y Axis"
+            yAxisTitle="Z Axis"
         />
           
       </>
