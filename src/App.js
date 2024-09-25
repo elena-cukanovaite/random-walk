@@ -7,7 +7,6 @@ let positionY=0;
 let positionZ=0;
 
 const CustomPlot = ({props,layoutTitle,xAxisTitle,yAxisTitle,zAxisTitle}) => {
-    console.log(props);
     const [settings, updateSettings] = useState({
         data: props,
         layout: { width: '100%', height: '100%', title: layoutTitle, showlegend: false, 
@@ -54,17 +53,45 @@ const initiatedPositionYZ = {x: [positionY], y: [positionZ],
     type: 'scatter', 
     marker: {color:'rgb(127, 127, 127)'}}; 
 
+
+
 const App = () => {
   const [valueOfSlider, setValueOfSlider] = useState("1");
   const [particles, setParticles] = useState([initiatedPosition3D]);
   const [particleXY, setParticlesXY] = useState([initiatedPositionXY]); 
   const [particleXZ, setParticlesXZ] = useState([initiatedPositionXZ]); 
   const [particleYZ, setParticlesYZ] = useState([initiatedPositionYZ]); 
+  const [average, setAverage] = useState({x:0,y:0,z:0});
+
+  const average3D = () => {
+    let sumX = 0;
+    let lengthX = 0;
+    let sumY = 0;
+    let lengthY = 0;
+    let sumZ = 0;
+    let lengthZ = 0;
+    for (let i = 0; i < particles.length; i++) {
+        let arrayX = particles[i].x;
+        sumX += arrayX.reduce((a, b) => a + b, 0);
+       
+        lengthX += arrayX.length;
+
+        let arrayY = particles[i].y;
+        sumY += arrayY.reduce((a, b) => a + b, 0);
+        lengthY += arrayY.length;
+
+        let arrayZ = particles[i].z;
+        sumZ += arrayZ.reduce((a, b) => a + b, 0);
+        lengthZ += arrayZ.length;
+    }
+
+    return {x: sumX/lengthX, y: sumY/lengthY, z: sumZ/lengthZ}
+    };
 
   const addNewParticle = () => {
     let newParticle3D = {x: [Math.random()*2-1], y: [Math.random()*2-1], z: [Math.random()*2-1], 
         type: 'scatter3d', 
-        marker: {color: `rgb(${Math.random()*256}, ${Math.random()*256}, ${Math.random()*256})`}}
+        marker: {color: `rgb(${Math.random()*256}, ${Math.random()*256}, ${Math.random()*256})`}}    
     setParticles([...particles,newParticle3D]);
 
     let newParticleXY = {...newParticle3D};
@@ -166,6 +193,8 @@ const App = () => {
 
   return (
       <>
+        AVERAGE: {average3D().x}, {average3D().y}, {average3D().z}
+        <br></br>
         <button onClick={addNewParticle}>Add one new particle</button>
         <button
               onClick={addOneNewStep}
@@ -201,7 +230,7 @@ const App = () => {
             xAxisTitle="Y Axis"
             yAxisTitle="Z Axis"
         />
-          
+        
       </>
   );
 };
