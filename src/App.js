@@ -188,7 +188,7 @@ const App = () => {
     setParticlesXZ(newParticlesXZ);
     setParticlesYZ(newParticlesYZ);
     setValueOfSlider(numberOfSteps);
-};
+    };
 
 
   return (
@@ -220,7 +220,6 @@ const App = () => {
                 <td>{average3D().z.toFixed(3)}</td>
             </tr>
         </table>
-
         <CustomPlot 
             props={particles}
             layoutTitle="3D Random Walk"
