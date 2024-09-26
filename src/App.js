@@ -53,15 +53,12 @@ const initiatedPositionYZ = {x: [positionY], y: [positionZ],
     type: 'scatter', 
     marker: {color:'rgb(127, 127, 127)'}}; 
 
-
-
 const App = () => {
   const [valueOfSlider, setValueOfSlider] = useState("1");
   const [particles, setParticles] = useState([initiatedPosition3D]);
   const [particleXY, setParticlesXY] = useState([initiatedPositionXY]); 
   const [particleXZ, setParticlesXZ] = useState([initiatedPositionXZ]); 
   const [particleYZ, setParticlesYZ] = useState([initiatedPositionYZ]); 
-  const [average, setAverage] = useState({x:0,y:0,z:0});
 
   const average3D = () => {
     let sumX = 0;
@@ -193,22 +190,30 @@ const App = () => {
 
   return (
       <>
-        <h1>Random Walk</h1>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
+        <h1><i class="material-icons">hiking</i> Random Walk</h1>
         <p>A random walk in 3D is a mathematical model that describes a path consisting of a series of steps in three-dimensional space. In this model, each step is determined by randomly sampling from a uniform distribution, allowing the walker to move in any direction with equal probability. The resulting trajectory can be visualized as a sequence of points in 3D space, showcasing the unpredictable nature of the walk as it explores the surrounding environment. This concept is often used in simulations, statistical mechanics, and various fields of science to model random processes.</p>
-        
-        <br></br>
+        <h1><i class="material-icons">tune</i> Generate Your Own Custom Plot</h1>
+
+        <center>
         <button onClick={addNewParticle}>Add one new particle</button>
         <button
               onClick={addOneNewStep}
             >
                 Generate one new position
         </button>
-        <p>Generate many positions at once</p>
+        
+        <br></br>
+        <br></br>
+        <i>Generate many positions at once</i>
+        <br></br>
+        <br></br>
         <b>Number of steps: </b>
         <input type="range" class="slider" min="1" max="1001" value={valueOfSlider} id='slider' onChange={manyRandomSteps}></input>
         {valueOfSlider}
+        
         <h2>AVERAGE:</h2> 
-        <table>
+        <table id="average">
             <tr>
                 <th>X-Axis</th>
                 <th>Y-Axis</th>
@@ -220,7 +225,7 @@ const App = () => {
                 <td>{average3D().z.toFixed(3)}</td>
             </tr>
         </table>
-        <CustomPlot 
+        <CustomPlot
             props={particles}
             layoutTitle="3D Random Walk"
             xAxisTitle="X Axis"
@@ -245,7 +250,7 @@ const App = () => {
             xAxisTitle="Y Axis"
             yAxisTitle="Z Axis"
         />
-        
+        </center>
       </>
   );
 };
